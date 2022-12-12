@@ -2,9 +2,6 @@
 
 This action runs an API scan on your GitHub repository.
 
-TODO: This expects a `micromap.zip` in the project root directory. Need to figure out how we should
-get that here.
-
 ## Inputs
 
 ### `remote-host`
