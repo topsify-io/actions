@@ -6,7 +6,7 @@ This action runs an API scan on your GitHub repository.
 
 ### `remote-host`
 
-**Required** The URL of the DevPal server to send the scan results to. Useful to specify if using
+The URL of the DevPal server to send the scan results to. Useful to specify if using
 a self-hosted version of DevPal.
 
 ### `devpal-token`

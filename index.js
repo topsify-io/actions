@@ -40,12 +40,12 @@ try {
   }
 
   console.log('Preparing Micromap...');
-  const {zipCode, zipMsg} = await unzip();
+  const {zipCode, zipMsg} = unzip();
   if (zipCode != 0) {
     throw new Error(`Unable to unpack Micromap executable! Error: ${zipMsg}`);
   }
   console.log('Running scan...');
-  const {microCode, microMsg} = await micromap(remoteHost);
+  const {microCode, microMsg} = micromap(remoteHost);
   if (microCode != 0) {
     throw new Error(`Unable to scan code repository! Error: ${microMsg}`);
   } else {
