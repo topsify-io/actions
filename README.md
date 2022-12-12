@@ -2,6 +2,13 @@
 
 This action runs an API scan on your GitHub repository.
 
+## Building
+
+To build the actions script for release, run:
+```
+ncc build index.js
+```
+
 ## Inputs
 
 ### `remote-host`
