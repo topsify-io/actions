@@ -2,9 +2,12 @@ name: 'DevPal API Scan'
 description: 'Scans the repository for APIs and reports findings back to DevPal'
 inputs:
   remote-host:
-    description: 'The URL of remote host to post results to.'
-    required: true
+    description: 'The URL of the DevPal server to send the scan results to. Useful to specify if using a self-hosted version of DevPal.'
+    required: false
     default: 'https://devpal.me/'
+  devpal-token:
+    description: 'The access token to be able to access the DevPal executables.'
+    required: true
 runs:
   using: 'node16'
   main: 'index.js'
