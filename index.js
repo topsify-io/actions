@@ -11,6 +11,15 @@ async function micromap(remoteHost) {
   }
 }
 
+async function download(token) {
+  try {
+    child_process.execSync(`sh download_micromap.sh -t ${token}`);
+    return { status: 0,  message: "OK"};
+  } catch (e) {
+    return { status: e.status,  message: e.stderr.toString()};
+  }
+}
+
 async function unzip() {
   try {
     child_process.execSync(`unzip micromap.zip`);
@@ -21,7 +30,15 @@ async function unzip() {
 }
 
 try {
+  const devpalToken = core.getInput('devpal-token');
   const remoteHost = core.getInput('remote-host');
+
+  console.log('Downloading micromap.zip...');
+  const {downloadCode, downloadMsg } = download(devpalToken);
+  if (downloadCode != 0) {
+    throw new Error(`Unable to download the Micromap executable! Error: ${downloadMsg}`);
+  }
+
   console.log('Preparing Micromap...');
   const {zipCode, zipMsg} = await unzip();
   if (zipCode != 0) {
