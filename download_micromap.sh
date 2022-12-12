@@ -1,10 +1,4 @@
-#!/bin/bash
-
-# in order to download release artifacts from github, you have to first retreive the
-# list of asset URLs using the github repo REST API. Use the asset URL to download 
-# the artifact as a octet-stream data stream. You will need to get an access token 
-# from "settings -> developer settings -> personal access tokens" on the github UI
-#!/bin/bash -e
+#!/bin/sh -e
 
 while getopts t: flag
 do
