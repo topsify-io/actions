@@ -14727,11 +14727,6 @@ const fetchAssetFile = (octokit, options) => (0, async_retry_1.default)(() => ba
     retries: 5,
     minTimeout: 1000,
 });
-const printOutput = (release) => {
-    console.log('version', release.data.tag_name);
-    console.log('name', release.data.name);
-    console.log('body', release.data.body);
-};
 const filterByFileName = (file) => (asset) => file === asset.name;
 const micromap = (cwd, hostName, workingDirectory) => {
     try {
@@ -14762,8 +14757,7 @@ const main = async () => {
     }
     const octokit = github.getOctokit(token);
     const release = await getRelease(octokit, { owner, repo, version });
-    console.log('Found latest release:');
-    printOutput(release);
+    console.log(`Found latest release: ${release.data.tag_name}`);
     const assetFilterFn = filterByFileName(target);
     const assets = release.data.assets.filter(assetFilterFn);
     if (assets.length === 0)

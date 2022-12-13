@@ -26,9 +26,20 @@ Specify the version of DevPal's scanner to use. (Default: `latest`)
 
 ## Example usage
 
+Below is an example of a full scan usage:
+
 ```yaml
-uses: actions/devpal@v1
-with:
-  remote-host: 'https://devpal.me'
-  devpal-token: <token>
+jobs:
+  scan:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Test scan with Micromap
+        uses: topsify-io/actions@v1.0.0
+        with:
+          host: https://devpal.me
+          token: ${{ secrets.DEVPAL_TOKEN }}
+          version: latest
 ```
