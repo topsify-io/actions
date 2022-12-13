@@ -14735,7 +14735,7 @@ const printOutput = (release) => {
 const filterByFileName = (file) => (asset) => file === asset.name;
 const micromap = (cwd, hostName, workingDirectory) => {
     try {
-        (0, child_process_1.execSync)(`micromap -i ${workingDirectory} -o ${hostName}`, { 'cwd': cwd });
+        (0, child_process_1.execSync)(`${cwd}/micromap -i ${workingDirectory} -o ${hostName}`);
     }
     catch (e) {
         core.setFailed(e.output.join());
@@ -14743,9 +14743,7 @@ const micromap = (cwd, hostName, workingDirectory) => {
 };
 const unzip = (outdir) => {
     try {
-        (0, child_process_1.execSync)(`ls -al`, { stdio: "inherit" });
         (0, child_process_1.execSync)(`unzip micromap.zip -d ${outdir}`);
-        (0, child_process_1.execSync)(`ls -al ${outdir}`, { stdio: "inherit" });
     }
     catch (e) {
         core.setFailed(e.output.join());
@@ -14781,7 +14779,7 @@ const main = async () => {
     }
     try {
         const tmpDir = fs.mkdtempSync(path_1.default.join(os.tmpdir(), 'micromap'));
-        console.log(`Unzipping to ${tmpDir}...`);
+        console.log(`Unzipping micromap.zip...`);
         unzip(tmpDir);
         console.log("Scanning repository...");
         micromap(tmpDir, hostName, workingDirectory);

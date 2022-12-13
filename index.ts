@@ -122,7 +122,7 @@ interface ChildProcess {
 
 const micromap = (cwd: string, hostName: string, workingDirectory: string) => {
     try {
-        execSync(`micromap -i ${workingDirectory} -o ${hostName}`, {'cwd': cwd});
+        execSync(`${cwd}/micromap -i ${workingDirectory} -o ${hostName}`);
     } catch (e: ChildProcess | any) {
         core.setFailed(e.output.join());
     }
@@ -130,9 +130,7 @@ const micromap = (cwd: string, hostName: string, workingDirectory: string) => {
 
 const unzip = (outdir: string) => {
     try {
-        execSync(`ls -al`, {stdio: "inherit"});
         execSync(`unzip micromap.zip -d ${outdir}`);
-        execSync(`ls -al ${outdir}`, {stdio: "inherit"});
     } catch (e: ChildProcess | any) {
         core.setFailed(e.output.join());
     }
@@ -172,7 +170,7 @@ const main = async (): Promise<void> => {
 
     try {
         const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'micromap'));
-        console.log(`Unzipping to ${tmpDir}...`);
+        console.log(`Unzipping micromap.zip...`);
         unzip(tmpDir);
 
         console.log("Scanning repository...");
