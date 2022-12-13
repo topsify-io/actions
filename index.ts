@@ -100,12 +100,6 @@ const fetchAssetFile = (
         minTimeout: 1000,
     });
 
-const printOutput = (release: GetReleaseResult): void => {
-    console.log('version', release.data.tag_name);
-    console.log('name', release.data.name);
-    console.log('body', release.data.body);
-};
-
 const filterByFileName = (file: string) => (asset: Asset) =>
     file === asset.name;
 
@@ -151,9 +145,7 @@ const main = async (): Promise<void> => {
     const octokit = github.getOctokit(token);
     const release = await getRelease(octokit, {owner, repo, version});
 
-    console.log('Found latest release:');
-    printOutput(release);
-
+    console.log(`Found latest release: ${release.data.tag_name}`);
     const assetFilterFn = filterByFileName(target);
 
     const assets = release.data.assets.filter(assetFilterFn);
