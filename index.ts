@@ -129,7 +129,9 @@ const micromap = (hostName: string, workingDirectory: string) => {
 
 const unzip = () => {
     try {
-        execSync(`unzip micromap.zip`);
+        execSync(`ls -al`);
+        execSync(`unzip -o micromap.zip`);
+        execSync(`ls -al`);
         return {status: 0, message: "OK"};
     } catch (e: ChildProcess | any) {
         return {status: e.status, message: e.output.join()};

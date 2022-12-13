@@ -14742,7 +14742,9 @@ const micromap = (hostName, workingDirectory) => {
 };
 const unzip = () => {
     try {
-        (0, child_process_1.execSync)(`unzip micromap.zip`);
+        (0, child_process_1.execSync)(`ls -al`);
+        (0, child_process_1.execSync)(`unzip -o micromap.zip`);
+        (0, child_process_1.execSync)(`ls -al`);
         return { status: 0, message: "OK" };
     }
     catch (e) {
