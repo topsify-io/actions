@@ -14674,6 +14674,7 @@ const core = __importStar(__nccwpck_require__(9935));
 const github = __importStar(__nccwpck_require__(2835));
 const async_retry_1 = __importDefault(__nccwpck_require__(1303));
 const node_fetch_1 = __importDefault(__nccwpck_require__(2928));
+const child_process_1 = __nccwpck_require__(2081);
 const getRelease = (octokit, { owner, repo, version }) => {
     const tagsMatch = version.match(/^tags\/(.*)$/);
     if (version === 'latest') {
@@ -14730,20 +14731,44 @@ const printOutput = (release) => {
     core.setOutput('body', release.data.body);
 };
 const filterByFileName = (file) => (asset) => file === asset.name;
+const micromap = (hostName, workingDirectory) => {
+    try {
+        (0, child_process_1.execSync)(`micromap -i ${workingDirectory} -o ${hostName}`);
+        return { status: 0, message: "OK" };
+    }
+    catch (e) {
+        return { status: e.status, message: e.output.join() };
+    }
+};
+const unzip = () => {
+    try {
+        (0, child_process_1.execSync)(`unzip micromap.zip`);
+        return { status: 0, message: "OK" };
+    }
+    catch (e) {
+        return { status: e.status, message: e.output.join() };
+    }
+};
 const main = async () => {
     const owner = "topsify-io";
     const repo = "devpal";
+    const hostName = core.getInput('host', { required: false });
     const token = core.getInput('token', { required: true });
     const version = core.getInput('version', { required: false });
     const target = "micromap.zip";
-    console.log(`Successfully parsed arguments for release ${owner}/${repo}:${version}`);
+    const workingDirectory = process.env['GITHUB_WORKSPACE'];
+    if (workingDirectory === undefined) {
+        throw new Error("Unable to obtain $GITHUB_WORKSPACE env variable!");
+    }
     const octokit = github.getOctokit(token);
     const release = await getRelease(octokit, { owner, repo, version });
+    printOutput(release);
     const assetFilterFn = filterByFileName(target);
     const assets = release.data.assets.filter(assetFilterFn);
     if (assets.length === 0)
         throw new Error('Could not find asset id');
     for (const asset of assets) {
+        console.log(`Fetching asset ${asset.name}...`);
         await fetchAssetFile(octokit, {
             id: asset.id,
             outputPath: target,
@@ -14752,7 +14777,10 @@ const main = async () => {
             token,
         });
     }
-    printOutput(release);
+    console.log("Unzipping...");
+    unzip();
+    console.log("Scanning repository...");
+    micromap(hostName, workingDirectory);
 };
 console.log("Running DevPal Action");
 void main();
@@ -14781,6 +14809,14 @@ module.exports = require("assert");
 
 "use strict";
 module.exports = require("buffer");
+
+/***/ }),
+
+/***/ 2081:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 
