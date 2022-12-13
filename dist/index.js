@@ -14668,13 +14668,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 /* eslint-disable no-void */
-const path_1 = __nccwpck_require__(1017);
+const path_1 = __importStar(__nccwpck_require__(1017));
 const promises_1 = __nccwpck_require__(3292);
 const core = __importStar(__nccwpck_require__(9935));
 const github = __importStar(__nccwpck_require__(2835));
 const async_retry_1 = __importDefault(__nccwpck_require__(1303));
 const node_fetch_1 = __importDefault(__nccwpck_require__(2928));
 const child_process_1 = __nccwpck_require__(2081);
+const os = __importStar(__nccwpck_require__(2037));
+const fs = __importStar(__nccwpck_require__(7147));
 const getRelease = (octokit, { owner, repo, version }) => {
     const tagsMatch = version.match(/^tags\/(.*)$/);
     if (version === 'latest') {
@@ -14731,19 +14733,19 @@ const printOutput = (release) => {
     core.setOutput('body', release.data.body);
 };
 const filterByFileName = (file) => (asset) => file === asset.name;
-const micromap = (hostName, workingDirectory) => {
+const micromap = (cwd, hostName, workingDirectory) => {
     try {
-        (0, child_process_1.execSync)(`micromap -i ${workingDirectory} -o ${hostName}`);
+        (0, child_process_1.execSync)(`micromap -i ${workingDirectory} -o ${hostName}`, { 'cwd': cwd });
     }
     catch (e) {
         core.setFailed(e.output.join());
     }
 };
-const unzip = () => {
+const unzip = (outdir) => {
     try {
         (0, child_process_1.execSync)(`ls -al`, { stdio: "inherit" });
-        (0, child_process_1.execSync)(`unzip -o micromap.zip`);
-        (0, child_process_1.execSync)(`ls -al`, { stdio: "inherit" });
+        (0, child_process_1.execSync)(`unzip micromap.zip -d ${outdir}`);
+        (0, child_process_1.execSync)(`ls -al ${outdir}`, { stdio: "inherit" });
     }
     catch (e) {
         core.setFailed(e.output.join());
@@ -14777,10 +14779,16 @@ const main = async () => {
             token,
         });
     }
-    console.log("Unzipping...");
-    unzip();
-    console.log("Scanning repository...");
-    micromap(hostName, workingDirectory);
+    try {
+        const tmpDir = fs.mkdtempSync(path_1.default.join(os.tmpdir(), 'micromap'));
+        console.log(`Unzipping to ${tmpDir}...`);
+        unzip(tmpDir);
+        console.log("Scanning repository...");
+        micromap(tmpDir, hostName, workingDirectory);
+    }
+    catch {
+        // handle error
+    }
 };
 console.log("Running DevPal Action");
 void main();
