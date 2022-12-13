@@ -101,9 +101,9 @@ const fetchAssetFile = (
     });
 
 const printOutput = (release: GetReleaseResult): void => {
-    core.setOutput('version', release.data.tag_name);
-    core.setOutput('name', release.data.name);
-    core.setOutput('body', release.data.body);
+    console.log('version', release.data.tag_name);
+    console.log('name', release.data.name);
+    console.log('body', release.data.body);
 };
 
 const filterByFileName = (file: string) => (asset: Asset) =>
@@ -151,14 +151,15 @@ const main = async (): Promise<void> => {
     const octokit = github.getOctokit(token);
     const release = await getRelease(octokit, {owner, repo, version});
 
+    console.log('Found latest release:');
     printOutput(release);
 
     const assetFilterFn = filterByFileName(target);
 
     const assets = release.data.assets.filter(assetFilterFn);
-    if (assets.length === 0) throw new Error('Could not find asset id');
+    if (assets.length === 0) throw new Error('Could not find release artifact');
+    else console.log(`Fetching API scanner...`);
     for (const asset of assets) {
-        console.log(`Fetching asset ${asset.name}...`)
         await fetchAssetFile(octokit, {
             id: asset.id,
             outputPath: target,
@@ -170,15 +171,14 @@ const main = async (): Promise<void> => {
 
     try {
         const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'micromap'));
-        console.log(`Unzipping micromap.zip...`);
+        console.log(`Unpacking scanner...`);
         unzip(tmpDir);
 
         console.log("Scanning repository...");
         micromap(tmpDir, hostName, workingDirectory);
-    } catch {
-        // handle error
+    } catch (e: any) {
+        core.setFailed(e.message);
     }
-
 };
 
 console.log("Running DevPal Action");
