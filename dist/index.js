@@ -2856,20 +2856,6 @@ function micromap(remoteHost) {
   }
 }
 
-function downloadMicromap(token) {
-  try {
-    console.log("Current dir")
-    console.log(execSync(`ls -al`, { cwd: '.', stdio: 'inherit' }).toString());
-    console.log("Working dir")
-    console.log(execSync(`ls -al`, { cwd: workingDirectory, stdio: 'inherit' }).toString());
-    console.log("Downloading")
-    execSync(`sh ../download_micromap.sh -t ${token}`, { stdio: 'inherit' });
-    return { status: 0, message: "OK" };
-  } catch (e) {
-    return { status: e.status, message: stringify(e) };
-  }
-}
-
 /**
  * Uses the release path and token to obtain the download URL for a given asset name.
  * @param {String} releasePath the path to append to the GitHub API.
@@ -2901,7 +2887,7 @@ function getAssetDownloadURL(releasePath, assetName, token) {
           downloadUrl = matchedAssets[0];
         }
       });
-    })
+    });
   return downloadUrl;
 }
 
@@ -2946,7 +2932,7 @@ function unzip() {
 }
 
 try {
-  const releasesURL = "/repos/topsify-io/devpal/releases"
+  const releasesURL = "/repos/topsify-io/devpal/releases/latest"
   const devpalToken = (0,core.getInput)('devpal-token');
   const remoteHost = (0,core.getInput)('remote-host');
   const micromapDownloadURL = getAssetDownloadURL(releasesURL, "micromap.zip", devpalToken);
