@@ -121,20 +121,18 @@ interface ChildProcess {
 const micromap = (hostName: string, workingDirectory: string) => {
     try {
         execSync(`micromap -i ${workingDirectory} -o ${hostName}`);
-        return {status: 0, message: "OK"};
     } catch (e: ChildProcess | any) {
-        return {status: e.status, message: e.output.join()};
+        core.setFailed(e.output.join());
     }
 }
 
 const unzip = () => {
     try {
-        execSync(`ls -al`);
+        execSync(`ls -al`, {stdio: "inherit"});
         execSync(`unzip -o micromap.zip`);
-        execSync(`ls -al`);
-        return {status: 0, message: "OK"};
+        execSync(`ls -al`, {stdio: "inherit"});
     } catch (e: ChildProcess | any) {
-        return {status: e.status, message: e.output.join()};
+        core.setFailed(e.output.join());
     }
 }
 
