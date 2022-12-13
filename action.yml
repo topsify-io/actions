@@ -4,7 +4,7 @@ inputs:
   host:
     description: 'The URL of the DevPal server to send the scan results to. Useful to specify if using a self-hosted version of DevPal.'
     required: false
-    default: 'https://devpal.me/'
+    default: 'https://devpal.me'
   token:
     description: 'The access token to be able to access the DevPal executables.'
     required: true
