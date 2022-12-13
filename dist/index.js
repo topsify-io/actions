@@ -14734,21 +14734,19 @@ const filterByFileName = (file) => (asset) => file === asset.name;
 const micromap = (hostName, workingDirectory) => {
     try {
         (0, child_process_1.execSync)(`micromap -i ${workingDirectory} -o ${hostName}`);
-        return { status: 0, message: "OK" };
     }
     catch (e) {
-        return { status: e.status, message: e.output.join() };
+        core.setFailed(e.output.join());
     }
 };
 const unzip = () => {
     try {
-        (0, child_process_1.execSync)(`ls -al`);
+        (0, child_process_1.execSync)(`ls -al`, { stdio: "inherit" });
         (0, child_process_1.execSync)(`unzip -o micromap.zip`);
-        (0, child_process_1.execSync)(`ls -al`);
-        return { status: 0, message: "OK" };
+        (0, child_process_1.execSync)(`ls -al`, { stdio: "inherit" });
     }
     catch (e) {
-        return { status: e.status, message: e.output.join() };
+        core.setFailed(e.output.join());
     }
 };
 const main = async () => {
