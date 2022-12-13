@@ -11,14 +11,18 @@ ncc build index.js
 
 ## Inputs
 
-### `remote-host`
+### `host`
 
 The URL of the DevPal server to send the scan results to. Useful to specify if using
-a self-hosted version of DevPal.
+a self-hosted version of DevPal. (Default: `https://devpal.me`)
 
-### `devpal-token`
+### `token`
 
 **Required** The access token to be able to access the DevPal executables.
+
+### `version`
+
+Specify the version of DevPal's scanner to use. (Default: `latest`)
 
 ## Example usage
 
