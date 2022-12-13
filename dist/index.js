@@ -14736,8 +14736,8 @@ const main = async () => {
     const token = core.getInput('token', { required: true });
     const version = core.getInput('version', { required: false });
     const target = "micromap.zip";
-    const baseUrl = core.getInput('octokitBaseUrl', { required: false }) || undefined;
-    const octokit = github.getOctokit(token, { baseUrl });
+    console.log(`Successfully parsed arguments for release ${owner}/${repo}:${version}`);
+    const octokit = github.getOctokit(token);
     const release = await getRelease(octokit, { owner, repo, version });
     const assetFilterFn = filterByFileName(target);
     const assets = release.data.assets.filter(assetFilterFn);
@@ -14754,6 +14754,7 @@ const main = async () => {
     }
     printOutput(release);
 };
+console.log("Running DevPal Action");
 void main();
 
 
