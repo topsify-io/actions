@@ -1,5 +1,5 @@
 /* eslint-disable no-void */
-import {dirname} from 'path';
+import path, {dirname} from 'path';
 import {mkdir, writeFile} from 'fs/promises';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
@@ -7,6 +7,8 @@ import retry from 'async-retry';
 import type {HeadersInit} from 'node-fetch';
 import fetch from 'node-fetch';
 import {execSync} from "child_process";
+import * as os from "os";
+import * as fs from "fs";
 
 interface GetReleaseOptions {
     readonly owner: string;
@@ -118,19 +120,19 @@ interface ChildProcess {
 
 }
 
-const micromap = (hostName: string, workingDirectory: string) => {
+const micromap = (cwd: string, hostName: string, workingDirectory: string) => {
     try {
-        execSync(`micromap -i ${workingDirectory} -o ${hostName}`);
+        execSync(`micromap -i ${workingDirectory} -o ${hostName}`, {'cwd': cwd});
     } catch (e: ChildProcess | any) {
         core.setFailed(e.output.join());
     }
 }
 
-const unzip = () => {
+const unzip = (outdir: string) => {
     try {
         execSync(`ls -al`, {stdio: "inherit"});
-        execSync(`unzip -o micromap.zip`);
-        execSync(`ls -al`, {stdio: "inherit"});
+        execSync(`unzip micromap.zip -d ${outdir}`);
+        execSync(`ls -al ${outdir}`, {stdio: "inherit"});
     } catch (e: ChildProcess | any) {
         core.setFailed(e.output.join());
     }
@@ -168,11 +170,17 @@ const main = async (): Promise<void> => {
         });
     }
 
-    console.log("Unzipping...");
-    unzip();
+    try {
+        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'micromap'));
+        console.log(`Unzipping to ${tmpDir}...`);
+        unzip(tmpDir);
 
-    console.log("Scanning repository...");
-    micromap(hostName, workingDirectory);
+        console.log("Scanning repository...");
+        micromap(tmpDir, hostName, workingDirectory);
+    } catch {
+        // handle error
+    }
+
 };
 
 console.log("Running DevPal Action");
